@@ -35,10 +35,23 @@
       padding: 10px;
       margin-bottom: 10px;
       border-radius: 5px;
+      position: relative;
     }
 
     #message-container div:nth-child(2n) {
       background-color: #d0d0d0;
+    }
+
+    .message-status {
+      position: absolute;
+      bottom: 5px;
+      right: 10px;
+      font-size: 12px;
+      color: gray;
+    }
+
+    .message-status.viewed {
+      color: blue;
     }
 
     #send-container {
@@ -92,8 +105,8 @@
     }
 
     .typing-indicator div {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background-color: #007bff;
       border-radius: 50%;
       margin: 0 2px;

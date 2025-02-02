@@ -9,7 +9,8 @@ appendMessage('You joined');
 socket.emit('new-user', name);
 
 socket.on('chat-message', data => {
-  appendMessage(`${data.name}: ${data.message}`);
+  const messageId = appendMessage(`${data.name}: ${data.message}`);
+  socket.emit('message-viewed', messageId);
 });
 
 socket.on('user-connected', name => {
@@ -28,10 +29,21 @@ socket.on('stop-typing', name => {
   hideTypingIndicator();
 });
 
+socket.on('message-viewed', messageId => {
+  const messageElement = document.getElementById(messageId);
+  if (messageElement) {
+    const statusElement = messageElement.querySelector('.message-status');
+    if (statusElement) {
+      statusElement.classList.add('viewed');
+      statusElement.innerText = '✓✓';
+    }
+  }
+});
+
 messageForm.addEventListener('submit', e => {
   e.preventDefault();
   const message = messageInput.value;
-  appendMessage(`You: ${message}`);
+  const messageId = appendMessage(`You: ${message}`);
   socket.emit('send-chat-message', message);
   socket.emit('stop-typing');
   messageInput.value = '';
@@ -47,8 +59,15 @@ messageInput.addEventListener('input', () => {
 
 function appendMessage(message) {
   const messageElement = document.createElement('div');
+  const messageId = `message-${Date.now()}`;
+  messageElement.id = messageId;
   messageElement.innerText = message;
+  const statusElement = document.createElement('span');
+  statusElement.classList.add('message-status');
+  statusElement.innerText = '✓';
+  messageElement.appendChild(statusElement);
   messageContainer.append(messageElement);
+  return messageId;
 }
 
 function showTypingIndicator() {
