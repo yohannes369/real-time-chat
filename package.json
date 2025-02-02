@@ -1,0 +1,28 @@
+{
+  "name": "real-time-chat",
+  "version": "1.0.0",
+  "description": "real time chat",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yohannes369/real-time-chat.git"
+  },
+  "keywords": [
+    "real",
+    "time",
+    "chat"
+  ],
+  "author": "yohannes yeneakal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yohannes369/real-time-chat/issues"
+  },
+  "homepage": "https://github.com/yohannes369/real-time-chat#readme",
+  "dependencies": {
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1"
+  }
+}
