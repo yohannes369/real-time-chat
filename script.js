@@ -2,6 +2,7 @@ const socket = io('http://localhost:3000');
 const messageContainer = document.getElementById('message-container');
 const messageForm = document.getElementById('send-container');
 const messageInput = document.getElementById('message-input');
+const typingIndicator = document.getElementById('typing-indicator');
 
 const name = prompt('What is your name?');
 appendMessage('You joined');
@@ -20,11 +21,11 @@ socket.on('user-disconnected', name => {
 });
 
 socket.on('typing', name => {
-  showTyping(name);
+  showTypingIndicator();
 });
 
 socket.on('stop-typing', name => {
-  hideTyping(name);
+  hideTypingIndicator();
 });
 
 messageForm.addEventListener('submit', e => {
@@ -50,20 +51,10 @@ function appendMessage(message) {
   messageContainer.append(messageElement);
 }
 
-function showTyping(name) {
-  let typingElement = document.getElementById('typing');
-  if (!typingElement) {
-    typingElement = document.createElement('div');
-    typingElement.id = 'typing';
-    typingElement.classList.add('typing');
-    typingElement.innerText = `${name} is typing...`;
-    messageContainer.append(typingElement);
-  }
+function showTypingIndicator() {
+  typingIndicator.style.display = 'flex';
 }
 
-function hideTyping(name) {
-  const typingElement = document.getElementById('typing');
-  if (typingElement) {
-    typingElement.remove();
-  }
+function hideTypingIndicator() {
+  typingIndicator.style.display = 'none';
 }

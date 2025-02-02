@@ -35,6 +35,14 @@ io.on('connection', socket => {
     socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] });
   });
 
+  socket.on('typing', () => {
+    socket.broadcast.emit('typing', users[socket.id]);
+  });
+
+  socket.on('stop-typing', () => {
+    socket.broadcast.emit('stop-typing', users[socket.id]);
+  });
+
   socket.on('disconnect', () => {
     socket.broadcast.emit('user-disconnected', users[socket.id]);
     delete users[socket.id];
@@ -42,5 +50,5 @@ io.on('connection', socket => {
 });
 
 server.listen(3000, () => {
-  console.log('listening on :3000');
+  console.log('listening on *:3000');
 });
