@@ -12,11 +12,19 @@
       padding: 0;
       margin: 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f0f0f0;
+      background-color: #000;
       font-family: Arial, sans-serif;
+    }
+
+    .header-text {
+      color: white;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-align: center;
     }
 
     #message-container {
@@ -28,6 +36,7 @@
       overflow-y: auto;
       max-height: 80vh;
       padding: 20px;
+      perspective: 1000px;
     }
 
     #message-container div {
@@ -36,6 +45,12 @@
       margin-bottom: 10px;
       border-radius: 5px;
       position: relative;
+      transform: rotateY(0deg);
+      transition: transform 0.5s;
+    }
+
+    #message-container div:hover {
+      transform: rotateY(10deg);
     }
 
     #message-container div:nth-child(2n) {
@@ -140,6 +155,7 @@
   </style>
 </head>
 <body>
+  <div class="header-text">Yohannes Yeneakl Live Chat</div>
   <div id="message-container"></div>
   <form id="send-container">
     <input type="text" id="message-input" placeholder="Type a message...">
