@@ -4,7 +4,7 @@
   "description": "real time chat",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,9 @@
   },
   "homepage": "https://github.com/yohannes369/real-time-chat#readme",
   "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "http": "^0.0.1-security",
     "nodemon": "^3.1.9",
     "socket.io": "^4.8.1"
   }
