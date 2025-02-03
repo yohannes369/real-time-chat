@@ -1,172 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Chat App</title>
-  <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
-  <script defer src="script.js"></script>
-  <style>
-    body {
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #000;
-      font-family: Arial, sans-serif;
-    }
+import React, { useState } from "react";
+import "./App.css"; // Import the CSS file
 
-    .header-text {
-      color: white;
-      font-size: 2rem;
-      margin-bottom: 20px;
-      text-align: center;
-    }
+const App = () => {
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState("");
 
-    #message-container {
-      width: 80%;
-      max-width: 1200px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      overflow-y: auto;
-      max-height: 80vh;
-      padding: 20px;
-      perspective: 1000px;
-    }
+  // Function to add a new message
+  const addMessage = (message, isOwnMessage = false) => {
+    const newMessage = {
+      id: Date.now(), // Unique ID for each message
+      text: message,
+      isOwnMessage,
+      isChecked: false, // Track if the checkmark is checked
+    };
+    setMessages([...messages, newMessage]);
+  };
 
-    #message-container div {
-      background-color: #e0e0e0;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      position: relative;
-      transform: rotateY(0deg);
-      transition: transform 0.5s;
-    }
+  // Function to toggle the checkmark
+  const toggleCheckmark = (id) => {
+    setMessages((prevMessages) =>
+      prevMessages.map((msg) =>
+        msg.id === id ? { ...msg, isChecked: !msg.isChecked } : msg
+      )
+    );
+  };
 
-    #message-container div:hover {
-      transform: rotateY(10deg);
+  // Function to handle sending a message
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (inputValue.trim() !== "") {
+      addMessage(inputValue, true);
+      setInputValue("");
     }
+  };
 
-    #message-container div:nth-child(2n) {
-      background-color: #d0d0d0;
-    }
+  return (
+    <div className="App">
+      <div className="header-text">Yohannes Yeneakl Live Chat</div>
+      <MessageContainer messages={messages} toggleCheckmark={toggleCheckmark} />
+      <SendMessageForm
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        handleSendMessage={handleSendMessage}
+      />
+      <TypingIndicator />
+    </div>
+  );
+};
 
-    .message-status {
-      position: absolute;
-      bottom: 5px;
-      right: 10px;
-      font-size: 12px;
-      color: gray;
-    }
+// MessageContainer Component
+const MessageContainer = ({ messages, toggleCheckmark }) => {
+  return (
+    <div id="message-container">
+      {messages.map((message) => (
+        <Message key={message.id} message={message} toggleCheckmark={toggleCheckmark} />
+      ))}
+    </div>
+  );
+};
 
-    .message-status.viewed {
-      color: blue;
-    }
+// Message Component
+const Message = ({ message, toggleCheckmark }) => {
+  return (
+    <div
+      className={`message-pop ${message.isOwnMessage ? "own-message" : ""}`}
+      style={{
+        backgroundColor: message.isOwnMessage ? "#007bff" : "#e0e0e0",
+        color: message.isOwnMessage ? "white" : "black",
+      }}
+    >
+      {message.text}
+      <div className="message-status">
+        <span>Sent</span>
+        <div
+          className={`checkmark-box ${message.isChecked ? "checked" : ""}`}
+          onClick={() => toggleCheckmark(message.id)}
+        >
+          {message.isChecked && "✓"}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-    #send-container {
-      position: fixed;
-      bottom: 20px;
-      background-color: white;
-      max-width: 1200px;
-      width: 80%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+// SendMessageForm Component
+const SendMessageForm = ({ inputValue, setInputValue, handleSendMessage }) => {
+  return (
+    <form id="send-container" onSubmit={handleSendMessage}>
+      <input
+        type="text"
+        id="message-input"
+        placeholder="Type a message..."
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+      />
+      <button type="submit" id="send-button">
+        Send
+      </button>
+    </form>
+  );
+};
 
-    #message-input {
-      flex-grow: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-right: 10px;
-    }
+// TypingIndicator Component
+const TypingIndicator = () => {
+  return (
+    <div className="typing-indicator" id="typing-indicator">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
+};
 
-    #send-button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #send-button:hover {
-      background-color: #0056b3;
-    }
-
-    .typing {
-      font-style: italic;
-      color: gray;
-    }
-
-    .typing-indicator {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .typing-indicator div {
-      width: 6px;
-      height: 6px;
-      background-color: #007bff;
-      border-radius: 50%;
-      margin: 0 2px;
-      animation: wave 1.2s infinite ease-in-out;
-    }
-
-    .typing-indicator div:nth-child(2) {
-      animation-delay: -1.1s;
-    }
-
-    .typing-indicator div:nth-child(3) {
-      animation-delay: -1s;
-    }
-
-    .typing-indicator div:nth-child(4) {
-      animation-delay: -0.9s;
-    }
-
-    .typing-indicator div:nth-child(5) {
-      animation-delay: -0.8s;
-    }
-
-    @keyframes wave {
-      0%, 60%, 100% {
-        transform: initial;
-      }
-      30% {
-        transform: translateY(-10px);
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="header-text">Yohannes Yeneakl Live Chat</div>
-  <div id="message-container"></div>
-  <form id="send-container">
-    <input type="text" id="message-input" placeholder="Type a message...">
-    <button type="submit" id="send-button">Send</button>
-  </form>
-  <div class="typing-indicator" id="typing-indicator">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-</body>
-</html>
+export default App;
